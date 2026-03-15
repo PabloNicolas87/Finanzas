@@ -1,0 +1,155 @@
+• turbo 2.8.15
+• Packages in scope: @finanzas/backend, @finanzas/mobile, @finanzas/shared-types, @finanzas/web
+• Running build in 4 packages
+• Remote caching disabled
+@finanzas/backend:build: cache miss, executing 278d1de19c5dc8b4
+@finanzas/shared-types:build: cache miss, executing 4389868796c8b907
+@finanzas/web:build: cache miss, executing adf188f4bce5d4cf
+@finanzas/backend:build: 
+@finanzas/backend:build: > @finanzas/backend@0.0.1 build
+@finanzas/backend:build: > nest build
+@finanzas/backend:build: 
+@finanzas/shared-types:build: 
+@finanzas/shared-types:build: > @finanzas/shared-types@1.0.0 build
+@finanzas/shared-types:build: > tsc
+@finanzas/shared-types:build: 
+@finanzas/web:build: 
+@finanzas/web:build: > @finanzas/web@0.1.0 build
+@finanzas/web:build: > next build
+@finanzas/web:build: 
+@finanzas/web:build: ▲ Next.js 16.1.6 (Turbopack)
+@finanzas/web:build: 
+@finanzas/web:build:   Creating an optimized production build ...
+@finanzas/web:build: ✓ Compiled successfully in 9.3s
+@finanzas/web:build:   Running TypeScript ...
+@finanzas/backend:build: [96mprisma/seed.ts[0m:[93m5[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@prisma/client"' has no exported member 'PrismaClient'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m5[0m import { PrismaClient, UserType } from '@prisma/client';
+@finanzas/backend:build: [7m [0m [91m         ~~~~~~~~~~~~[0m
+@finanzas/backend:build: [96mprisma/seed.ts[0m:[93m5[0m:[93m24[0m - [91merror[0m[90m TS2305: [0mModule '"@prisma/client"' has no exported member 'UserType'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m5[0m import { PrismaClient, UserType } from '@prisma/client';
+@finanzas/backend:build: [7m [0m [91m                       ~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/accounts/accounts.service.ts[0m:[93m4[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@prisma/client"' has no exported member 'Prisma'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m4[0m import { Prisma } from '@prisma/client';
+@finanzas/backend:build: [7m [0m [91m         ~~~~~~[0m
+@finanzas/backend:build: [96msrc/accounts/accounts.service.ts[0m:[93m12[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'account' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m12[0m     return this.prisma.account.findMany({
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~~~~[0m
+@finanzas/backend:build: [96msrc/accounts/accounts.service.ts[0m:[93m19[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'account' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m19[0m     return this.prisma.account.findMany({
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~~~~[0m
+@finanzas/backend:build: [96msrc/accounts/accounts.service.ts[0m:[93m27[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'account' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m27[0m     return this.prisma.account.findUniqueOrThrow({ where: { id } });
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~~~~[0m
+@finanzas/backend:build: [96msrc/accounts/accounts.service.ts[0m:[93m32[0m:[93m39[0m - [91merror[0m[90m TS2339: [0mProperty 'account' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m32[0m     const account = await this.prisma.account.findUniqueOrThrow({
+@finanzas/backend:build: [7m  [0m [91m                                      ~~~~~~~[0m
+@finanzas/backend:build: [96msrc/categories/categories.service.ts[0m:[93m20[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'category' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m20[0m     return this.prisma.category.findMany({ orderBy: { name: 'asc' } });
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/categories/categories.service.ts[0m:[93m25[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'category' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m25[0m     return this.prisma.category.findUniqueOrThrow({ where: { id } });
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/categories/categories.service.ts[0m:[93m30[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'category' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m30[0m     return this.prisma.category.create({ data: dto });
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/categories/categories.service.ts[0m:[93m35[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'category' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m35[0m     return this.prisma.category.update({ where: { id }, data: dto });
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/categories/categories.service.ts[0m:[93m40[0m:[93m40[0m - [91merror[0m[90m TS2339: [0mProperty 'category' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m40[0m     const category = await this.prisma.category.findUnique({
+@finanzas/backend:build: Found 28 error(s).
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m  [0m [91m                                       ~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/categories/categories.service.ts[0m:[93m52[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'category' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m52[0m     return this.prisma.category.delete({ where: { id } });
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/prisma/prisma.service.ts[0m:[93m4[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@prisma/client"' has no exported member 'PrismaClient'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m4[0m import { PrismaClient } from '@prisma/client';
+@finanzas/backend:build: [7m [0m [91m         ~~~~~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/prisma/prisma.service.ts[0m:[93m22[0m:[93m16[0m - [91merror[0m[90m TS2339: [0mProperty '$connect' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m22[0m     await this.$connect();
+@finanzas/backend:build: [7m  [0m [91m               ~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/prisma/prisma.service.ts[0m:[93m26[0m:[93m16[0m - [91merror[0m[90m TS2339: [0mProperty '$disconnect' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m26[0m     await this.$disconnect();
+@finanzas/backend:build: [7m  [0m [91m               ~~~~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/transactions/transactions.service.ts[0m:[93m8[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"@prisma/client"' has no exported member 'TransactionType'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m8[0m import { TransactionType } from '@prisma/client';
+@finanzas/backend:build: [7m [0m [91m         ~~~~~~~~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/transactions/transactions.service.ts[0m:[93m60[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty '$transaction' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m60[0m     return this.prisma.$transaction(async (tx) => {
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/transactions/transactions.service.ts[0m:[93m102[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty '$transaction' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m102[0m     return this.prisma.$transaction(async (tx) => {
+@finanzas/backend:build: [7m   [0m [91m                       ~~~~~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/transactions/transactions.service.ts[0m:[93m142[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty '$transaction' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m142[0m     return this.prisma.$transaction(async (tx) => {
+@finanzas/backend:build: [7m   [0m [91m                       ~~~~~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/transactions/transactions.service.ts[0m:[93m248[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'transaction' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m248[0m     return this.prisma.transaction.findMany({
+@finanzas/backend:build: [7m   [0m [91m                       ~~~~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/transactions/transactions.service.ts[0m:[93m279[0m:[93m44[0m - [91merror[0m[90m TS2339: [0mProperty 'transaction' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m279[0m     const transactions = await this.prisma.transaction.findMany({
+@finanzas/backend:build: [7m   [0m [91m                                           ~~~~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/transactions/transactions.service.ts[0m:[93m333[0m:[93m36[0m - [91merror[0m[90m TS2339: [0mProperty 'user' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m333[0m     const user = await this.prisma.user.findUniqueOrThrow({
+@finanzas/backend:build: [7m   [0m [91m                                   ~~~~[0m
+@finanzas/backend:build: [96msrc/transactions/transactions.service.ts[0m:[93m340[0m:[93m44[0m - [91merror[0m[90m TS2339: [0mProperty 'transaction' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m340[0m     const transactions = await this.prisma.transaction.findMany({
+@finanzas/backend:build: [7m   [0m [91m                                           ~~~~~~~~~~~[0m
+@finanzas/backend:build: [96msrc/users/users.service.ts[0m:[93m11[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'user' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m11[0m     return this.prisma.user.findMany({
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~[0m
+@finanzas/backend:build: [96msrc/users/users.service.ts[0m:[93m18[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'user' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m18[0m     return this.prisma.user.findUniqueOrThrow({ where: { id } });
+@finanzas/backend:build: [7m  [0m [91m                       ~~~~[0m
+@finanzas/backend:build: [96msrc/users/users.service.ts[0m:[93m26[0m:[93m36[0m - [91merror[0m[90m TS2339: [0mProperty 'user' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m26[0m     const user = await this.prisma.user.findUniqueOrThrow({
+@finanzas/backend:build: [7m  [0m [91m                                   ~~~~[0m
+@finanzas/backend:build: [96msrc/users/users.service.ts[0m:[93m33[0m:[93m38[0m - [91merror[0m[90m TS2339: [0mProperty 'transaction' does not exist on type 'PrismaService'.
+@finanzas/backend:build: 
+@finanzas/backend:build: [7m33[0m     const result = await this.prisma.transaction.aggregate({
+@finanzas/backend:build: [7m  [0m [91m                                     ~~~~~~~~~~~[0m
+@finanzas/backend:build: 
+@finanzas/backend:build: npm error Lifecycle script `build` failed with error:
+@finanzas/backend:build: npm error code 1
+@finanzas/backend:build: npm error path C:\projetos\Finanzas\apps\backend
+@finanzas/backend:build: npm error workspace @finanzas/backend@0.0.1
+@finanzas/backend:build: npm error location C:\projetos\Finanzas\apps\backend
+@finanzas/backend:build: npm error command failed
+@finanzas/backend:build: npm error command C:\WINDOWS\system32\cmd.exe /d /s /c nest build
+@finanzas/backend:build: ERROR: command finished with error: command (C:\projetos\Finanzas\apps\backend) C:\Program Files\nodejs\npm.cmd run build exited (1)
+@finanzas/backend#build: command (C:\projetos\Finanzas\apps\backend) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    1 successful, 3 total
+Cached:    0 cached, 3 total
+  Time:    20.19s 
+Failed:    @finanzas/backend#build
+
+ ERROR  run failed: command  exited (1)
