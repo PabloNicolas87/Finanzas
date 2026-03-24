@@ -45,4 +45,4 @@ USER nestjs
 
 EXPOSE 3005
 
-CMD ["node", "dist/main"]
+CMD ["node", "dist/apps/backend/main"]
