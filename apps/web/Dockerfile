@@ -13,12 +13,14 @@ RUN npm ci
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
+ARG NEXT_PUBLIC_API_URL
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build Next.js
 # Ensure output: 'standalone' is set in next.config.ts (already verified)
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm run build -w @finanzas/web
 
 # Stage 3: Runner

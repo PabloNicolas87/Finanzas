@@ -32,6 +32,8 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://100.87.152.119:4000}
     restart: always
     depends_on:
       - backend
@@ -40,7 +42,7 @@ services:
     environment:
       # This points to the backend. User mentioned Tailscale IP or localhost.
       # Defaulting to localhost of the host machine if accessed via browser.
-      - API_URL=http://100.87.152.119:4000
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://100.87.152.119:4000}
     networks:
       - app_network
 
