@@ -20,12 +20,14 @@ services:
     restart: always
     depends_on:
       - db
+    # AGREGÁ ESTO PARA PODER ENTRAR DESDE AFUERA:
+    ports:
+      - "4000:3005"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-finanzas}?schema=public
       PORT: 3005
     networks:
       - app_network
-
   web:
     build:
       context: .
@@ -38,12 +40,13 @@ services:
     environment:
       # This points to the backend. User mentioned Tailscale IP or localhost.
       # Defaulting to localhost of the host machine if accessed via browser.
-      API_URL: ${API_URL:-http://localhost:3005}
+      - API_URL=http://100.87.152.119:4000
     networks:
       - app_network
 
 volumes:
   postgres_data:
+
 
 networks:
   app_network:
