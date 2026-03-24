@@ -1,0 +1,25 @@
+name: Deploy to acer-lab
+
+on:
+  push:
+    branches:
+      - main # Esto se ejecuta cada vez que subes código a la rama principal
+
+jobs:
+  deploy:
+    runs-on: self-hosted # ¡Esta es la palabra mágica que llama a tu servidor en lugar de usar la nube de GitHub!
+
+    steps:
+      - name: 📥 Obtener el código más reciente
+        uses: actions/checkout@v4
+
+      - name: 🔐 Crear archivo .env de Producción
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER }}" > .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+
+      - name: 🐳 Construir y Levantar Contenedores
+        run: |
+          docker compose -f docker-compose.prod.yml up -d --build
