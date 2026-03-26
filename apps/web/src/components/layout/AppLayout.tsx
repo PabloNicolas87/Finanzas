@@ -3,11 +3,22 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Home, FileText, List, Settings, CreditCard, Wallet, Sun, Moon } from 'lucide-react';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
+
+  const navigation = [
+    { href: '/', label: 'Dashboard', icon: Home },
+    { href: '/mei', label: 'Panel MEI', icon: FileText },
+    { href: '/incomes', label: 'Ingresos', icon: Wallet },
+    { href: '/transactions', label: 'Gastos Mensuales', icon: List },
+    { href: '/cards', label: 'Mis Tarjetas', icon: CreditCard },
+    { href: '/settings', label: 'Configuración', icon: Settings },
+  ];
 
   useEffect(() => {
     setMounted(true);
@@ -35,48 +46,26 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </h1>
         </div>
         <nav className="flex-1 px-4 py-6 flex flex-col gap-2">
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-          >
-            <Home className="w-5 h-5" />
-            <span className="font-medium">Dashboard</span>
-          </Link>
-          <Link
-            href="/mei"
-            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-          >
-            <FileText className="w-5 h-5" />
-            <span className="font-medium">Panel MEI</span>
-          </Link>
-          <Link
-            href="/incomes"
-            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-          >
-            <Wallet className="w-5 h-5" />
-            <span className="font-medium">Ingresos</span>
-          </Link>
-          <Link
-            href="/transactions"
-            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-          >
-            <List className="w-5 h-5" />
-            <span className="font-medium">Gastos Mensuales</span>
-          </Link>
-          <Link
-            href="/cards"
-            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-          >
-            <CreditCard className="w-5 h-5" />
-            <span className="font-medium">Mis Tarjetas</span>
-          </Link>
-          <Link
-            href="/settings"
-            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-900 text-gray-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
-          >
-            <Settings className="w-5 h-5" />
-            <span className="font-medium">Configuración</span>
-          </Link>
+          {navigation.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
+                  flex items-center gap-3 px-3 py-2 rounded-md transition-colors
+                  ${isActive
+                    ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white font-medium'
+                    : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/50 dark:hover:text-white'
+                  }
+                `}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Theme Toggle at bottom */}

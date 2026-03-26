@@ -212,7 +212,7 @@ export function ExpenseFormModal({ isOpen, onClose, onSuccess, initialData }: Ex
             <Input id="amount" type="number" step="0.01" min="0" {...register('amount', { required: true, valueAsNumber: true })} />
           </div>
 
-          {error && <p className="text-sm font-medium text-red-500">{error}</p>}
+          {error && <p className="text-sm font-medium text-red-500 dark:text-red-400">{error}</p>}
           
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>Cancelar</Button>

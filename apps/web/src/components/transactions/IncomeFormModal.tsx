@@ -188,7 +188,7 @@ export function IncomeFormModal({ isOpen, onClose, onSuccess, initialData }: Inc
         </DialogHeader>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">
+          <div className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-3 rounded-md text-sm mb-4">
             {error}
           </div>
         )}
@@ -263,11 +263,11 @@ export function IncomeFormModal({ isOpen, onClose, onSuccess, initialData }: Inc
             <div className="grid gap-1.5 leading-none">
               <label
                 htmlFor="isMeiInvoice"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm font-medium leading-none text-neutral-900 dark:text-neutral-200 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Auditable MEI
               </label>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
                 Marcar si este ingreso cuenta para el límite de facturación MEI de Pablo.
               </p>
             </div>
@@ -276,11 +276,11 @@ export function IncomeFormModal({ isOpen, onClose, onSuccess, initialData }: Inc
           {watch('isMeiInvoice') && (
             <div className="space-y-2 pl-6 animate-in fade-in slide-in-from-top-1">
               <Label>Tipo de Factura</Label>
-              <Select 
-                onValueChange={(val) => setValue('meiInvoiceType' as any, val)} 
+              <Select
+                onValueChange={(val) => setValue('meiInvoiceType' as any, val)}
                 value={watch('meiInvoiceType' as any) || 'GENUINE'}
               >
-                <SelectTrigger className="w-full bg-slate-50 border-indigo-100">
+                <SelectTrigger className="w-full bg-slate-50 dark:bg-neutral-900 border-indigo-100 dark:border-indigo-900/50">
                   <SelectValue placeholder="Seleccionar tipo..." />
                 </SelectTrigger>
                 <SelectContent>
