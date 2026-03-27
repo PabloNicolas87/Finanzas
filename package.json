@@ -2,6 +2,7 @@
   "name": "finanzas-monorepo",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "packageManager": "npm@10.8.2",
   "workspaces": [
     "apps/*",

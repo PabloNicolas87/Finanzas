@@ -6,8 +6,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// En Prisma 7, la URL de conexión se configura en prisma.config.ts
-// No se declara `url` aquí — el driver adapter la gestiona.
 datasource db {
   provider = "postgresql"
 }

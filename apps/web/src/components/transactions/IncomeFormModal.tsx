@@ -32,8 +32,8 @@ interface FormData {
   amount: number;
   description: string;
   date: string;
-  accountId: string;
-  categoryId: string;
+  accountId: string | null;
+  categoryId: string | null;
   isMeiInvoice: boolean;
   meiInvoiceType?: string;
 }
@@ -144,8 +144,8 @@ export function IncomeFormModal({ isOpen, onClose, onSuccess, initialData }: Inc
       }
 
       const payload = {
-        accountId: Number(data.accountId),
-        categoryId: Number(data.categoryId),
+        accountId: Number(data.accountId || 0),
+        categoryId: Number(data.categoryId || 0),
         amount: Number(data.amount),
         description: data.description,
         date: new Date(data.date).toISOString(),

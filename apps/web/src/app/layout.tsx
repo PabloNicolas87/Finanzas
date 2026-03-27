@@ -22,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="es" className="h-full" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         className={`${inter.className} font-sans antialiased h-full flex bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-300`}
       >
         <Providers>
