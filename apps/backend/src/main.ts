@@ -7,9 +7,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 👇 Configuración estricta de CORS según requerimientos
-  app.enableCors({
-    origin: ['http://localhost:3001', 'http://127.0.0.1:3001'],
+app.enableCors({
+    origin: [
+      'http://localhost:3001',   // Frontend Web
+      'http://127.0.0.1:3001',
+      'http://localhost:8081',   // Mobile App (Expo Web)
+      'http://127.0.0.1:8081',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
     allowedHeaders: 'Content-Type, Accept, Authorization',
@@ -39,6 +43,9 @@ async function bootstrap() {
   // La documentación vivirá en la ruta /api/docs
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(process.env.PORT ?? 3005);
+  // 2. Escuchar en 0.0.0.0 para ser visible en la red local
+  const port = process.env.PORT ?? 3005;
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 Backend running on: http://localhost:${port}/api`);
 }
 bootstrap();
