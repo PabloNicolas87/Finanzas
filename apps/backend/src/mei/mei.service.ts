@@ -1,6 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { TransactionType, TransactionStatus, MeiInvoiceType } from '@prisma/client';
+import {
+  TransactionType,
+  TransactionStatus,
+  MeiInvoiceType,
+} from '@prisma/client';
 
 @Injectable()
 export class MeiService {
@@ -14,16 +18,16 @@ export class MeiService {
     // Look up accounts and category dynamically
     const fromAccount = await this.prisma.account.findFirstOrThrow({
       where: { user: { type: 'PF' } }, // Rocío
-      include: { user: true }
+      include: { user: true },
     });
-    
+
     const toAccount = await this.prisma.account.findFirstOrThrow({
       where: { user: { type: 'PJ' } }, // Pablo
-      include: { user: true }
+      include: { user: true },
     });
 
     const category = await this.prisma.category.findFirstOrThrow({
-      where: { name: 'Factura MEI Consultoría' }
+      where: { name: 'Factura MEI Consultoría' },
     });
 
     const FROM_ACCOUNT_ID = fromAccount.id;
@@ -40,7 +44,8 @@ export class MeiService {
           amount: data.amount,
           type: TransactionType.TRANSFER,
           status: TransactionStatus.PAID,
-          description: data.description || 'Transferencia Consultoría MEI (R -> P)',
+          description:
+            data.description || 'Transferencia Consultoría MEI (R -> P)',
           date: data.date,
           isMeiInvoice: false,
         },

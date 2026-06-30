@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { CategoryType } from '@prisma/client';
 import { CategoriesService } from './categories.service';
 import type { CreateCategoryDto } from './categories.service';

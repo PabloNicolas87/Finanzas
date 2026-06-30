@@ -5,6 +5,6 @@ module.exports = {
     path: 'prisma/migrations',
   },
   datasource: {
-    url: 'postgresql://postgres:postgres@localhost:5433/finanzas',
+    url: process.env.DATABASE_URL,
   },
 };

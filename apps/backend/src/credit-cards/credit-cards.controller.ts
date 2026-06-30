@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Put, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Put,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { TransactionStatus } from '@prisma/client';
 import { CreditCardsService } from './credit-cards.service';
 import { CreateCreditCardDto } from './dto/create-credit-card.dto';
@@ -37,12 +48,17 @@ export class CreditCardsController {
     @Param('id', ParseIntPipe) id: number,
     @Body('status') status: TransactionStatus,
   ) {
-    console.log(`[DEBUG] Received PUT for statement ${id} with status: ${status}`);
+    console.log(
+      `[DEBUG] Received PUT for statement ${id} with status: ${status}`,
+    );
     return this.creditCardsService.updateStatementStatus(id, status);
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateCreditCardDto: UpdateCreditCardDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCreditCardDto: UpdateCreditCardDto,
+  ) {
     return this.creditCardsService.update(id, updateCreditCardDto);
   }
 

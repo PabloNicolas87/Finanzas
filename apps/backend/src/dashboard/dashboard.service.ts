@@ -33,7 +33,7 @@ export class DashboardService {
     });
 
     const income = monthlyTransactions
-      .filter(tx => tx.type === TransactionType.INCOME)
+      .filter((tx) => tx.type === TransactionType.INCOME)
       .reduce((sum, tx) => sum + Number(tx.amount), 0);
 
     const expense = monthlyTransactions
@@ -60,7 +60,12 @@ export class DashboardService {
     const cards = await this.creditCardsService.findAll();
     const creditCards = await Promise.all(
       cards.map(async (card) => {
-        const statement = await this.creditCardsService.calculateMonthlyStatement(card.id, month - 1, year);
+        const statement =
+          await this.creditCardsService.calculateMonthlyStatement(
+            card.id,
+            month - 1,
+            year,
+          );
         return {
           name: card.name,
           total: Number(statement.totalAmount),
@@ -76,7 +81,10 @@ export class DashboardService {
     let meiStatus = { total: 0, limit: 81000, percentage: 0 };
 
     if (pablo) {
-      const meiReport = await this.transactionsService.getMeiAuditReport(pablo.id, year);
+      const meiReport = await this.transactionsService.getMeiAuditReport(
+        pablo.id,
+        year,
+      );
       meiStatus = {
         total: meiReport.totalFacturado,
         limit: meiReport.limite,
@@ -85,7 +93,8 @@ export class DashboardService {
     }
 
     // 5. Category Chart (Expenses only)
-    const categoryReport = await this.transactionsService.getMonthlyHouseholdReport(year, month);
+    const categoryReport =
+      await this.transactionsService.getMonthlyHouseholdReport(year, month);
 
     return {
       cashFlow: {
@@ -93,7 +102,7 @@ export class DashboardService {
         expense: totalExpenses,
         available: income - totalExpenses,
       },
-      accounts: accounts.map(acc => ({
+      accounts: accounts.map((acc) => ({
         name: acc.name,
         bankName: acc.bankName,
         balance: Number(acc.balance),

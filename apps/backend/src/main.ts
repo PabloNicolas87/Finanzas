@@ -3,13 +3,17 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-// 🔴 SOLUCIÓN DEFINITIVA DE CORS PARA DESARROLLO LOCAL
+  // Implement helmet for security
+  app.use(helmet());
+
+  // 🔴 SOLUCIÓN DEFINITIVA DE CORS PARA DESARROLLO LOCAL
   app.enableCors({
-    origin: true, // Acepta a TODOS (localhost:8081, 3001, IPs de tailscale, etc)
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Acepta a TODOS (localhost:8081, 3001, IPs de tailscale, etc)
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
@@ -18,18 +22,22 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // Validaciones globales de los DTOs
-  app.useGlobalPipes(new ValidationPipe({ 
-    whitelist: true,
-    transform: true, // ✨ Esto convierte automáticamente los query params a lo que espera tu DTO
-    transformOptions: { enableImplicitConversion: true } // ✨ Clave para que los números no den error 400
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true, // ✨ Esto convierte automáticamente los query params a lo que espera tu DTO
+      transformOptions: { enableImplicitConversion: true }, // ✨ Clave para que los números no den error 400
+    }),
+  );
 
   // ---------------------------------------------------
   // CONFIGURACIÓN DE SWAGGER (Documentación Automática)
   // ---------------------------------------------------
   const config = new DocumentBuilder()
     .setTitle('Finanzas API')
-    .setDescription('API para la gestión financiera de la casa y facturación MEI')
+    .setDescription(
+      'API para la gestión financiera de la casa y facturación MEI',
+    )
     .setVersion('1.0')
     .addTag('users', 'Gestión de usuarios')
     .addTag('accounts', 'Cuentas bancarias y saldos')

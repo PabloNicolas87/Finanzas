@@ -58,7 +58,10 @@ export class CreditCardsService {
       },
     });
 
-    const totalAmount = transactions.reduce((sum, tx) => sum + Number(tx.amount), 0);
+    const totalAmount = transactions.reduce(
+      (sum, tx) => sum + Number(tx.amount),
+      0,
+    );
 
     return {
       transactions,
@@ -73,7 +76,7 @@ export class CreditCardsService {
   async calculateMonthlyStatement(cardId: number, month: number, year: number) {
     const start = new Date(year, month, 1);
     const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
-    
+
     const card = await this.prisma.creditCard.findUniqueOrThrow({
       where: { id: cardId },
     });

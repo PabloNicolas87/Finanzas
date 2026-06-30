@@ -24,7 +24,10 @@ export class MeiController {
   constructor(private readonly meiService: MeiService) {}
 
   @Post('internal-transfer')
-  @ApiOperation({ summary: 'Realiza una transferencia interna PF -> PJ con reserva de cupo MEI' })
+  @ApiOperation({
+    summary:
+      'Realiza una transferencia interna PF -> PJ con reserva de cupo MEI',
+  })
   async createInternalTransfer(@Body() body: InternalTransferDto) {
     return this.meiService.createInternalTransfer({
       amount: body.amount,

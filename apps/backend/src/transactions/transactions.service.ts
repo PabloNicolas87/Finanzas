@@ -5,7 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { TransactionType, TransactionStatus, MeiInvoiceType } from '@prisma/client';
+import {
+  TransactionType,
+  TransactionStatus,
+  MeiInvoiceType,
+  Prisma,
+} from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { CreditCardsService } from '../credit-cards/credit-cards.service';
 
@@ -64,7 +69,7 @@ export class TransactionsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly creditCardsService: CreditCardsService,
-  ) { }
+  ) {}
 
   // ─────────────────────────────────────────────────────────────
   //  CREAR EGRESO
@@ -74,12 +79,23 @@ export class TransactionsService {
    * Crea uno o múltiples EXPENSEs (si hay cuotas) y descuenta el saldo de la cuenta si aplica.
    */
   async createExpense(dto: CreateExpenseDto) {
-    const installments = dto.totalInstallments && dto.totalInstallments > 1 ? dto.totalInstallments : 1;
+    const installments =
+      dto.totalInstallments && dto.totalInstallments > 1
+        ? dto.totalInstallments
+        : 1;
     const amountPerInstallment = dto.amount / installments;
     const startDate = dto.date ? new Date(dto.date) : new Date();
 
     // Verificar saldo suficiente si no es una compra con tarjeta
-    let creditCard: any = null;
+    let creditCard: {
+      id: number;
+      accountId: number;
+      name: string;
+      closingDay: number;
+      dueDay: number;
+      createdAt: Date;
+      updatedAt: Date;
+    } | null = null;
     if (!dto.creditCardId) {
       const account = await this.prisma.account.findUniqueOrThrow({
         where: { id: dto.accountId },
@@ -95,8 +111,8 @@ export class TransactionsService {
       });
     }
 
-    const operations: any[] = [];
-    
+    const operations: Prisma.PrismaPromise<any>[] = [];
+
     let creditCardGroupId: string | undefined;
     let firstDueDate = new Date(startDate);
     if (creditCard) {
@@ -104,10 +120,14 @@ export class TransactionsService {
       const purchaseDay = startDate.getDate();
       const currentMonth = startDate.getMonth();
       const currentYear = startDate.getFullYear();
-      
+
       if (purchaseDay >= creditCard.closingDay) {
         // Pasa para el próximo mes
-        firstDueDate = new Date(currentYear, currentMonth + 1, creditCard.dueDay);
+        firstDueDate = new Date(
+          currentYear,
+          currentMonth + 1,
+          creditCard.dueDay,
+        );
       } else {
         // Se paga en el mes actual
         firstDueDate = new Date(currentYear, currentMonth, creditCard.dueDay);
@@ -141,7 +161,7 @@ export class TransactionsService {
             purchaseDate: creditCard ? startDate : null,
           },
           include: { account: true, category: true },
-        })
+        }),
       );
     }
 
@@ -152,16 +172,20 @@ export class TransactionsService {
         this.prisma.account.update({
           where: { id: dto.accountId },
           data: { balance: { decrement: dto.amount } },
-        })
+        }),
       );
     }
 
     const results = await this.prisma.$transaction(operations);
 
     // Filter out the account update result if it exists.
-    const createdTransactions = dto.creditCardId ? results : results.slice(0, -1);
-    
-    return createdTransactions.length === 1 ? createdTransactions[0] : createdTransactions;
+    const createdTransactions = dto.creditCardId
+      ? results
+      : results.slice(0, -1);
+
+    return createdTransactions.length === 1
+      ? createdTransactions[0]
+      : createdTransactions;
   }
 
   /**
@@ -173,7 +197,6 @@ export class TransactionsService {
       data: { status },
     });
   }
-
 
   // ─────────────────────────────────────────────────────────────
   //  CREAR INGRESO
@@ -191,9 +214,10 @@ export class TransactionsService {
             accountId: dto.accountId,
             categoryId: dto.categoryId,
             amount: dto.amount,
-            type: dto.meiInvoiceType === MeiInvoiceType.INTERNAL_PENDING 
-              ? TransactionType.TRANSFER 
-              : TransactionType.INCOME,
+            type:
+              dto.meiInvoiceType === MeiInvoiceType.INTERNAL_PENDING
+                ? TransactionType.TRANSFER
+                : TransactionType.INCOME,
             description: dto.description,
             date: dto.date ? new Date(dto.date) : new Date(),
             isMeiInvoice: dto.isMeiInvoice ?? false,
@@ -267,7 +291,7 @@ export class TransactionsService {
         if (totalActual + dto.amount > limite) {
           throw new BadRequestException(
             `Esta factura de ${dto.amount} BRL superaría el límite MEI anual. ` +
-            `Facturado: ${totalActual} BRL | Límite: ${limite} BRL | Disponible: ${limite - totalActual} BRL`,
+              `Facturado: ${totalActual} BRL | Límite: ${limite} BRL | Disponible: ${limite - totalActual} BRL`,
           );
         }
       }
@@ -329,78 +353,86 @@ export class TransactionsService {
   }
 
   async updateTransaction(id: number, dto: UpdateTransactionDto) {
-    const transaction = await this.prisma.transaction.findUniqueOrThrow({ where: { id } });
-    
+    const transaction = await this.prisma.transaction.findUniqueOrThrow({
+      where: { id },
+    });
+
     if (transaction.creditCardId) {
-      throw new BadRequestException('Las transacciones de tarjetas de crédito no pueden ser editadas manualmente.');
+      throw new BadRequestException(
+        'Las transacciones de tarjetas de crédito no pueden ser editadas manualmente.',
+      );
     }
 
     return this.prisma.$transaction(async (tx) => {
-       // Reverse old transaction impact matching its type
-       if (transaction.type === TransactionType.INCOME) {
-         await tx.account.update({
-           where: { id: transaction.accountId },
-           data: { balance: { decrement: transaction.amount } }
-         });
-       } else if (transaction.type === TransactionType.EXPENSE) {
-         await tx.account.update({
-           where: { id: transaction.accountId },
-           data: { balance: { increment: transaction.amount } }
-         });
-       }
+      // Reverse old transaction impact matching its type
+      if (transaction.type === TransactionType.INCOME) {
+        await tx.account.update({
+          where: { id: transaction.accountId },
+          data: { balance: { decrement: transaction.amount } },
+        });
+      } else if (transaction.type === TransactionType.EXPENSE) {
+        await tx.account.update({
+          where: { id: transaction.accountId },
+          data: { balance: { increment: transaction.amount } },
+        });
+      }
 
-       const newAccountId = dto.accountId ?? transaction.accountId;
-       const newAmount = dto.amount ?? Number(transaction.amount);
+      const newAccountId = dto.accountId ?? transaction.accountId;
+      const newAmount = dto.amount ?? Number(transaction.amount);
 
-       // Apply new transaction impact matching its type
-       if (transaction.type === TransactionType.INCOME) {
-         await tx.account.update({
-           where: { id: newAccountId },
-           data: { balance: { increment: newAmount } }
-         });
-       } else if (transaction.type === TransactionType.EXPENSE) {
-         await tx.account.update({
-           where: { id: newAccountId },
-           data: { balance: { decrement: newAmount } }
-         });
-       }
+      // Apply new transaction impact matching its type
+      if (transaction.type === TransactionType.INCOME) {
+        await tx.account.update({
+          where: { id: newAccountId },
+          data: { balance: { increment: newAmount } },
+        });
+      } else if (transaction.type === TransactionType.EXPENSE) {
+        await tx.account.update({
+          where: { id: newAccountId },
+          data: { balance: { decrement: newAmount } },
+        });
+      }
 
-       return tx.transaction.update({
-         where: { id },
-         data: {
-           accountId: dto.accountId,
-           categoryId: dto.categoryId,
-           amount: dto.amount,
-           description: dto.description,
-           date: dto.date ? new Date(dto.date) : undefined,
-           isMeiInvoice: dto.isMeiInvoice,
-         }
-       });
+      return tx.transaction.update({
+        where: { id },
+        data: {
+          accountId: dto.accountId,
+          categoryId: dto.categoryId,
+          amount: dto.amount,
+          description: dto.description,
+          date: dto.date ? new Date(dto.date) : undefined,
+          isMeiInvoice: dto.isMeiInvoice,
+        },
+      });
     });
   }
 
   async deleteTransaction(id: number) {
-    const transaction = await this.prisma.transaction.findUniqueOrThrow({ where: { id } });
+    const transaction = await this.prisma.transaction.findUniqueOrThrow({
+      where: { id },
+    });
 
     if (transaction.creditCardId) {
-      throw new BadRequestException('Las transacciones de tarjetas de crédito no pueden ser eliminadas manualmente.');
+      throw new BadRequestException(
+        'Las transacciones de tarjetas de crédito no pueden ser eliminadas manualmente.',
+      );
     }
 
     return this.prisma.$transaction(async (tx) => {
-       // Reverse transaction impact
-       if (transaction.type === TransactionType.INCOME) {
-         await tx.account.update({
-           where: { id: transaction.accountId },
-           data: { balance: { decrement: transaction.amount } }
-         });
-       } else if (transaction.type === TransactionType.EXPENSE) {
-         await tx.account.update({
-           where: { id: transaction.accountId },
-           data: { balance: { increment: transaction.amount } }
-         });
-       }
+      // Reverse transaction impact
+      if (transaction.type === TransactionType.INCOME) {
+        await tx.account.update({
+          where: { id: transaction.accountId },
+          data: { balance: { decrement: transaction.amount } },
+        });
+      } else if (transaction.type === TransactionType.EXPENSE) {
+        await tx.account.update({
+          where: { id: transaction.accountId },
+          data: { balance: { increment: transaction.amount } },
+        });
+      }
 
-       return tx.transaction.delete({ where: { id } });
+      return tx.transaction.delete({ where: { id } });
     });
   }
 
@@ -417,21 +449,28 @@ export class TransactionsService {
 
     await this.prisma.$transaction(async (tx) => {
       await tx.transaction.deleteMany({
-        where: { creditCardGroupId: groupId }
+        where: { creditCardGroupId: groupId },
       });
     });
 
     // Recalculate affected statements
     const affectedMonths = new Set<string>();
-    transactions.forEach(t => {
+    transactions.forEach((t) => {
       if (t.dueDate) {
-        affectedMonths.add(`${t.dueDate.getFullYear()}-${t.dueDate.getMonth()}`);
+        affectedMonths.add(
+          `${t.dueDate.getFullYear()}-${t.dueDate.getMonth()}`,
+        );
       }
     });
 
     for (const period of affectedMonths) {
       const [year, month] = period.split('-').map(Number);
-      if (cardId) await this.creditCardsService.calculateMonthlyStatement(cardId, month, year);
+      if (cardId)
+        await this.creditCardsService.calculateMonthlyStatement(
+          cardId,
+          month,
+          year,
+        );
     }
 
     return { success: true };
@@ -441,28 +480,36 @@ export class TransactionsService {
     const oldTransactions = await this.prisma.transaction.findMany({
       where: { creditCardGroupId: groupId },
     });
-    
+
     // Create new first, then delete old to avoid data loss if create fails
     const newTx = await this.createExpense(dto);
 
     if (oldTransactions.length > 0) {
-       await this.prisma.transaction.deleteMany({
-         where: { creditCardGroupId: groupId }
-       });
+      await this.prisma.transaction.deleteMany({
+        where: { creditCardGroupId: groupId },
+      });
     }
 
-    const oldCardId = oldTransactions.length > 0 ? oldTransactions[0].creditCardId : null;
+    const oldCardId =
+      oldTransactions.length > 0 ? oldTransactions[0].creditCardId : null;
     const newCardId = dto.creditCardId || null;
-    
+
     // Recalculate old card statements
     if (oldCardId) {
       const oldAffectedMonths = new Set<string>();
-      oldTransactions.forEach(t => {
-        if (t.dueDate) oldAffectedMonths.add(`${t.dueDate.getFullYear()}-${t.dueDate.getMonth()}`);
+      oldTransactions.forEach((t) => {
+        if (t.dueDate)
+          oldAffectedMonths.add(
+            `${t.dueDate.getFullYear()}-${t.dueDate.getMonth()}`,
+          );
       });
       for (const period of oldAffectedMonths) {
         const [year, month] = period.split('-').map(Number);
-        await this.creditCardsService.calculateMonthlyStatement(oldCardId, month, year);
+        await this.creditCardsService.calculateMonthlyStatement(
+          oldCardId,
+          month,
+          year,
+        );
       }
     }
 
@@ -471,11 +518,18 @@ export class TransactionsService {
       const newAffectedMonths = new Set<string>();
       const newTxs = Array.isArray(newTx) ? newTx : [newTx];
       newTxs.forEach((t: any) => {
-        if (t.dueDate) newAffectedMonths.add(`${new Date(t.dueDate).getFullYear()}-${new Date(t.dueDate).getMonth()}`);
+        if (t.dueDate)
+          newAffectedMonths.add(
+            `${new Date(t.dueDate).getFullYear()}-${new Date(t.dueDate).getMonth()}`,
+          );
       });
       for (const period of newAffectedMonths) {
         const [year, month] = period.split('-').map(Number);
-        await this.creditCardsService.calculateMonthlyStatement(newCardId, month, year);
+        await this.creditCardsService.calculateMonthlyStatement(
+          newCardId,
+          month,
+          year,
+        );
       }
     }
 
@@ -488,7 +542,8 @@ export class TransactionsService {
 
   /** Listar transacciones con filtros flexibles */
   async findAll(filters: TransactionFilters = {}) {
-    const { accountId, categoryId, type, dateFrom, dateTo, isMeiInvoice } = filters;
+    const { accountId, categoryId, type, dateFrom, dateTo, isMeiInvoice } =
+      filters;
 
     const baseWhere = {
       ...(accountId && { accountId }),
@@ -497,11 +552,11 @@ export class TransactionsService {
       ...(isMeiInvoice !== undefined && { isMeiInvoice }),
       ...(dateFrom || dateTo
         ? {
-          date: {
-            ...(dateFrom && { gte: dateFrom }),
-            ...(dateTo && { lte: dateTo }),
-          },
-        }
+            date: {
+              ...(dateFrom && { gte: dateFrom }),
+              ...(dateTo && { lte: dateTo }),
+            },
+          }
         : {}),
     };
 
@@ -526,14 +581,18 @@ export class TransactionsService {
       const refDate = new Date(dateFrom || new Date());
       const queryYear = refDate.getFullYear();
       const queryMonth = refDate.getMonth(); // 0-11
-      
+
       // Solo generar si dateFrom/dateTo proveen un foco en un solo mes
       // (en la app web, el dashboard mensual pasa un mes específico siempre)
       const activeCards = await this.prisma.creditCard.findMany();
       await Promise.all(
-        activeCards.map(card => 
-          this.creditCardsService.calculateMonthlyStatement(card.id, queryMonth, queryYear)
-        )
+        activeCards.map((card) =>
+          this.creditCardsService.calculateMonthlyStatement(
+            card.id,
+            queryMonth,
+            queryYear,
+          ),
+        ),
       );
 
       // 3. Fetch the generated statements and map them to virtual rows for the frontend unified table
@@ -547,7 +606,7 @@ export class TransactionsService {
         },
       });
 
-      consolidatedCCTransactions = statements.map(st => ({
+      consolidatedCCTransactions = statements.map((st) => ({
         id: `virtual-card-${st.creditCardId}-${dateFrom ? dateFrom : 'all'}`, // Keep for backwards compatibility
         statementId: st.id, // For the new Phase 4 frontend logic
         amount: Number(st.totalAmount),
@@ -566,9 +625,10 @@ export class TransactionsService {
     }
 
     // 4. Merge and Sort descending by date
-    const mergedTransactions = [...normalTransactions, ...consolidatedCCTransactions].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    const mergedTransactions = [
+      ...normalTransactions,
+      ...consolidatedCCTransactions,
+    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return mergedTransactions;
   }
@@ -638,7 +698,9 @@ export class TransactionsService {
       totalGastos,
       totalPablo,
       totalRocio,
-      categorias: Object.values(byCategory).sort((a: any, b: any) => b.total - a.total),
+      categorias: Object.values(byCategory).sort(
+        (a: { total: number }, b: { total: number }) => b.total - a.total,
+      ),
     };
   }
 
@@ -683,8 +745,12 @@ export class TransactionsService {
         limite > 0
           ? ((totalFacturado / limite) * 100).toFixed(2) + '%'
           : '0.00%',
-      genuineInvoices: transactions.filter(tx => tx.meiInvoiceType === MeiInvoiceType.GENUINE),
-      internalAccumulated: transactions.filter(tx => tx.meiInvoiceType === MeiInvoiceType.INTERNAL_PENDING),
+      genuineInvoices: transactions.filter(
+        (tx) => tx.meiInvoiceType === MeiInvoiceType.GENUINE,
+      ),
+      internalAccumulated: transactions.filter(
+        (tx) => tx.meiInvoiceType === MeiInvoiceType.INTERNAL_PENDING,
+      ),
     };
   }
 }
