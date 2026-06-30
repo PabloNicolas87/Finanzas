@@ -8,7 +8,9 @@ export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
   @Get('summary')
-  @ApiOperation({ summary: 'Obtiene el resumen consolidado para el dashboard principal' })
+  @ApiOperation({
+    summary: 'Obtiene el resumen consolidado para el dashboard principal',
+  })
   async getSummary(
     @Query('month', ParseIntPipe) month: number,
     @Query('year', ParseIntPipe) year: number,

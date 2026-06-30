@@ -1,11 +1,22 @@
-import { Controller, Get, Post, Patch, Put, Delete, Body, Param, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Put,
+  Delete,
+  Body,
+  Param,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { TransactionStatus, TransactionType } from '@prisma/client';
-import type { 
-  CreateExpenseDto, 
-  CreateIncomeDto, 
+import type {
+  CreateExpenseDto,
+  CreateIncomeDto,
   ProcessMeiInvoiceDto,
-  UpdateTransactionDto
+  UpdateTransactionDto,
 } from './transactions.service';
 
 @Controller('transactions')
@@ -26,7 +37,6 @@ export class TransactionsController {
   processMeiInvoice(@Body() processMeiInvoiceDto: ProcessMeiInvoiceDto) {
     return this.transactionsService.processMeiInvoice(processMeiInvoiceDto);
   }
-
 
   @Patch(':id/status')
   updateStatus(
@@ -49,20 +59,19 @@ export class TransactionsController {
     @Param('groupId') groupId: string,
     @Body() createExpenseDto: CreateExpenseDto,
   ) {
-    return this.transactionsService.updateCreditCardPurchase(groupId, createExpenseDto);
+    return this.transactionsService.updateCreditCardPurchase(
+      groupId,
+      createExpenseDto,
+    );
   }
 
   @Delete('credit-card-purchase/:groupId')
-  deleteCreditCardPurchase(
-    @Param('groupId') groupId: string,
-  ) {
+  deleteCreditCardPurchase(@Param('groupId') groupId: string) {
     return this.transactionsService.deleteCreditCardPurchase(groupId);
   }
 
   @Delete(':id')
-  deleteTransaction(
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  deleteTransaction(@Param('id', ParseIntPipe) id: number) {
     return this.transactionsService.deleteTransaction(id);
   }
 
